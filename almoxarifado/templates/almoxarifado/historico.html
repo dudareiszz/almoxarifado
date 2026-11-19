@@ -1,0 +1,29 @@
+{% extends "almoxarifado/base.html" %}
+{% block titulo %}Histórico{% endblock %}
+{% block conteudo %}
+<h1>Histórico de movimentações</h1>
+{% if movimentacoes %}
+<div class="tabela-wrap">
+<table class="tabela">
+  <thead><tr><th>Data</th><th>Material</th><th>Tipo</th><th>Qtd.</th><th>Saldo após</th><th>Responsável</th><th>Solicitante / setor</th></tr></thead>
+  <tbody>
+  {% for m in movimentacoes %}
+    <tr>
+      <td data-label="Data">{{ m.data|date:"d/m/Y H:i" }}</td>
+      <td data-label="Material">{{ m.material.nome }}</td>
+      <td data-label="Tipo"><span class="selo {% if m.tipo == 'ENTRADA' %}selo-ok{% else %}selo-sem{% endif %}">{{ m.get_tipo_display }}</span></td>
+      <td data-label="Qtd.">{{ m.quantidade }}</td>
+      <td data-label="Saldo após">{{ m.saldo_apos }}</td>
+      <td data-label="Responsável">{{ m.responsavel.get_full_name|default:m.responsavel.username }}</td>
+      <td data-label="Solicitante">
+        {% if m.pedido %}{{ m.pedido.solicitante.get_full_name|default:m.pedido.solicitante.username }} · {{ m.pedido.setor.nome }} (pedido #{{ m.pedido.pk }}){% else %}—{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+  <p class="vazio">Ainda não há movimentações.</p>
+{% endif %}
+{% endblock %}

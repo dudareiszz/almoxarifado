@@ -1,0 +1,24 @@
+{% extends "almoxarifado/base.html" %}
+{% block titulo %}Solicitantes{% endblock %}
+{% block conteudo %}
+<h1>Solicitantes</h1>
+<p><a class="btn" href="{% url 'solicitante_novo' %}">Nova conta de solicitante</a></p>
+{% if perfis %}
+<div class="tabela-wrap">
+<table class="tabela">
+  <thead><tr><th>Nome</th><th>Usuário</th><th>Setor de lotação</th></tr></thead>
+  <tbody>
+  {% for p in perfis %}
+    <tr>
+      <td data-label="Nome">{{ p.usuario.get_full_name|default:"—" }}</td>
+      <td data-label="Usuário">{{ p.usuario.username }}</td>
+      <td data-label="Setor">{{ p.setor.nome }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+  <p class="vazio">Nenhum solicitante cadastrado ainda.</p>
+{% endif %}
+{% endblock %}

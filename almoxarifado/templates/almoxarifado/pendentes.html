@@ -1,0 +1,60 @@
+{% extends "almoxarifado/base.html" %}
+{% block titulo %}Pedidos pendentes{% endblock %}
+{% block conteudo %}
+<h1>Pedidos pendentes</h1>
+
+{% for p in pendentes %}
+<article class="cartao pedido">
+  <header>
+    <h2>Pedido #{{ p.pk }} · {{ p.material.nome }}</h2>
+    <span class="selo selo-pendente">Pendente</span>
+  </header>
+  <dl class="detalhes">
+    <div><dt>Quantidade pedida</dt><dd>{{ p.quantidade }} {{ p.material.unidade }}</dd></div>
+    <div><dt>Saldo atual</dt><dd>{{ p.material.saldo }}</dd></div>
+    <div><dt>Solicitante</dt><dd>{{ p.solicitante.get_full_name|default:p.solicitante.username }} ({{ p.solicitante.username }})</dd></div>
+    <div><dt>Setor</dt><dd>{{ p.setor.nome }}</dd></div>
+    <div><dt>Data do pedido</dt><dd>{{ p.criado_em|date:"d/m/Y H:i" }}</dd></div>
+    <div class="largo"><dt>Justificativa</dt><dd>{{ p.justificativa }}</dd></div>
+  </dl>
+  {% if erro_id == p.pk %}
+    <p class="alerta error" role="alert">{{ erro_msg }}</p>
+  {% endif %}
+  <div class="acoes">
+    <form method="post" action="{% url 'pedido_atender' p.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn">Atender</button>
+    </form>
+    <a class="btn btn-perigo" href="{% url 'pedido_recusar' p.pk %}">Recusar</a>
+    {% if erro_id == p.pk %}
+      <a class="btn btn-claro" href="{% url 'entrada_nova' %}?material={{ p.material_id }}">Registrar entrada</a>
+    {% endif %}
+  </div>
+</article>
+{% empty %}
+  <p class="vazio">Não há pedidos pendentes.</p>
+{% endfor %}
+
+{% if decididos %}
+<h2>Últimas decisões</h2>
+<div class="tabela-wrap">
+<table class="tabela">
+  <thead><tr><th>Nº</th><th>Material</th><th>Qtd.</th><th>Solicitante</th><th>Setor</th><th>Resultado</th><th>Decidido por</th></tr></thead>
+  <tbody>
+  {% for p in decididos %}
+    <tr>
+      <td data-label="Nº">{{ p.pk }}</td>
+      <td data-label="Material">{{ p.material.nome }}</td>
+      <td data-label="Qtd.">{{ p.quantidade }}</td>
+      <td data-label="Solicitante">{{ p.solicitante.get_full_name|default:p.solicitante.username }}</td>
+      <td data-label="Setor">{{ p.setor.nome }}</td>
+      <td data-label="Resultado"><span class="selo selo-{{ p.status|lower }}">{{ p.get_status_display }}</span>
+        {% if p.motivo_recusa %}<br><small>{{ p.motivo_recusa }}</small>{% endif %}</td>
+      <td data-label="Decidido por">{{ p.decidido_por.get_full_name|default:p.decidido_por.username }} em {{ p.decidido_em|date:"d/m/Y H:i" }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+{% endblock %}

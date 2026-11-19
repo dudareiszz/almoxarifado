@@ -1,0 +1,48 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Almoxarifado{% endblock %} · IFPI Pedro II</title>
+  <link rel="stylesheet" href="{% static 'almoxarifado/style.css' %}">
+</head>
+<body>
+  <header class="topo">
+    <div class="conteudo topo-in">
+      <a class="marca" href="{% url 'catalogo' %}">Almoxarifado <small>IFPI · Campus Pedro II</small></a>
+      {% if user.is_authenticated %}
+      <nav class="nav" aria-label="Navegação principal">
+        <a href="{% url 'catalogo' %}">Catálogo</a>
+        {% if eh_gerente %}
+          <a href="{% url 'pedidos_pendentes' %}">Pedidos pendentes</a>
+          <a href="{% url 'entrada_nova' %}">Registrar entrada</a>
+          <a href="{% url 'material_novo' %}">Novo material</a>
+          <a href="{% url 'solicitantes' %}">Solicitantes</a>
+          <a href="{% url 'historico' %}">Histórico</a>
+        {% else %}
+          <a href="{% url 'pedido_novo' %}">Novo pedido</a>
+          <a href="{% url 'meus_pedidos' %}">Meus pedidos</a>
+        {% endif %}
+        <form method="post" action="{% url 'logout' %}" class="form-sair">
+          {% csrf_token %}
+          <button type="submit" class="btn-sair">Sair ({{ user.username }})</button>
+        </form>
+      </nav>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="conteudo">
+    {% if messages %}
+      <div class="mensagens">
+        {% for m in messages %}
+          <p class="alerta {{ m.tags }}" role="status">{{ m }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  <footer class="rodape conteudo">Sistema de laboratório · dados fictícios</footer>
+</body>
+</html>

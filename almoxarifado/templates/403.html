@@ -1,0 +1,7 @@
+{% extends "almoxarifado/base.html" %}
+{% block titulo %}Acesso negado{% endblock %}
+{% block conteudo %}
+<h1>Acesso negado</h1>
+<p class="alerta error" role="alert">Sua conta não tem permissão para acessar esta página.</p>
+<p><a class="btn" href="{% url 'catalogo' %}">Voltar ao catálogo</a></p>
+{% endblock %}

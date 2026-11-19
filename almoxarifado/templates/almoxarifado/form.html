@@ -1,0 +1,14 @@
+{% extends "almoxarifado/base.html" %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block conteudo %}
+<h1>{{ titulo }}</h1>
+{% if intro %}<p>{{ intro }}</p>{% endif %}
+<form method="post" class="cartao form-pagina" novalidate>
+  {% csrf_token %}
+  {% include "almoxarifado/_form.html" %}
+  <div class="acoes">
+    <button type="submit" class="btn">{{ botao|default:"Salvar" }}</button>
+    <a class="btn btn-claro" href="{% url 'catalogo' %}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

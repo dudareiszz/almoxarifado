@@ -1,0 +1,33 @@
+{% extends "almoxarifado/base.html" %}
+{% block titulo %}Meus pedidos{% endblock %}
+{% block conteudo %}
+<h1>Meus pedidos</h1>
+<p><a class="btn" href="{% url 'pedido_novo' %}">Novo pedido</a></p>
+{% if pedidos %}
+<div class="tabela-wrap">
+<table class="tabela">
+  <thead><tr><th>Nº</th><th>Data</th><th>Material</th><th>Qtd.</th><th>Justificativa</th><th>Situação</th><th>Decisão</th></tr></thead>
+  <tbody>
+  {% for p in pedidos %}
+    <tr>
+      <td data-label="Nº">{{ p.pk }}</td>
+      <td data-label="Data">{{ p.criado_em|date:"d/m/Y H:i" }}</td>
+      <td data-label="Material">{{ p.material.nome }}</td>
+      <td data-label="Qtd.">{{ p.quantidade }} {{ p.material.unidade }}</td>
+      <td data-label="Justificativa">{{ p.justificativa }}</td>
+      <td data-label="Situação"><span class="selo selo-{{ p.status|lower }}">{{ p.get_status_display }}</span></td>
+      <td data-label="Decisão">
+        {% if p.decidido_em %}
+          {{ p.decidido_em|date:"d/m/Y H:i" }} por {{ p.decidido_por.get_full_name|default:p.decidido_por.username }}
+          {% if p.motivo_recusa %}<br><strong>Motivo:</strong> {{ p.motivo_recusa }}{% endif %}
+        {% else %}Aguardando a gerência{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+  <p class="vazio">Você ainda não fez nenhum pedido.</p>
+{% endif %}
+{% endblock %}

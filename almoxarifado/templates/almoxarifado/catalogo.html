@@ -1,0 +1,53 @@
+{% extends "almoxarifado/base.html" %}
+{% block titulo %}Catálogo{% endblock %}
+{% block conteudo %}
+<h1>Catálogo de materiais</h1>
+
+<form method="get" class="busca" role="search">
+  <label for="q">Buscar por nome ou código</label>
+  <div class="busca-linha">
+    <input type="search" id="q" name="q" value="{{ busca }}" placeholder="Ex.: papel ou PAP-001">
+    <button type="submit" class="btn">Buscar</button>
+    {% if busca %}<a class="btn btn-claro" href="{% url 'catalogo' %}">Limpar</a>{% endif %}
+  </div>
+</form>
+
+{% if busca %}
+  <p class="resumo">{{ materiais|length }} resultado{{ materiais|length|pluralize }} para «{{ busca }}».</p>
+{% endif %}
+
+{% if materiais %}
+<div class="tabela-wrap">
+<table class="tabela">
+  <thead>
+    <tr><th>Código</th><th>Material</th><th>Categoria</th><th>Unidade</th><th>Saldo</th><th>Situação</th><th></th></tr>
+  </thead>
+  <tbody>
+  {% for m in materiais %}
+    <tr>
+      <td data-label="Código">{{ m.codigo }}</td>
+      <td data-label="Material">{{ m.nome }}</td>
+      <td data-label="Categoria">{{ m.categoria.nome }}</td>
+      <td data-label="Unidade">{{ m.unidade }}</td>
+      <td data-label="Saldo">{{ m.saldo }}</td>
+      <td data-label="Situação"><span class="selo {% if m.disponivel %}selo-ok{% else %}selo-sem{% endif %}">{{ m.situacao }}</span></td>
+      <td data-label="Ações" class="celula-acoes">
+        {% if eh_gerente %}
+          <a href="{% url 'material_editar' m.pk %}">Editar</a>
+          <a href="{% url 'entrada_nova' %}?material={{ m.pk }}">Registrar entrada</a>
+        {% else %}
+          <a href="{% url 'pedido_novo' %}?material={{ m.pk }}">Pedir</a>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+  <p class="vazio">
+    {% if busca %}Nenhum material encontrado para «{{ busca }}». Confira a grafia ou busque pelo código.
+    {% else %}Ainda não há materiais cadastrados.{% endif %}
+  </p>
+{% endif %}
+{% endblock %}
